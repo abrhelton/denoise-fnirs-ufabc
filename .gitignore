@@ -1,2 +1,7 @@
 # Ignoreing datasets
 data/
+bin/
+include/
+lib/
+lib64/
+share/
