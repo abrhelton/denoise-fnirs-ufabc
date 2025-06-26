@@ -1,5 +1,5 @@
 # Ignoreing datasets
-data/
+raw_data/
 bin/
 include/
 lib/
