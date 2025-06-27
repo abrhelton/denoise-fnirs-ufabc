@@ -1,7 +1,9 @@
 # Ignoreing datasets
 raw_data/
+csv_data/
 bin/
 include/
 lib/
 lib64/
 share/
+norm_data/
