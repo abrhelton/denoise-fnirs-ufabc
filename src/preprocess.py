@@ -14,6 +14,7 @@ pattern_data_a = re.compile(r'.*\.snirf$')
 
 matching_folders = []
 
+# Gettinhg the subjects of each experiment
 def get_subject(BASE_DIR_A):
     for item in os.listdir(BASE_DIR_A):
         full_path = os.path.join(BASE_DIR_A, item)
@@ -21,6 +22,7 @@ def get_subject(BASE_DIR_A):
             matching_folders.append(full_path)
     return matching_folders
 
+# Converting the .snitf data into .csv
 def snirf_to_csv(matching_folders):
     for subject in matching_folders:
         for item in os.listdir(subject + '/nirs'):
@@ -37,17 +39,21 @@ def snirf_to_csv(matching_folders):
                 print(OUTPUT_DIR)
                 df.to_csv(OUTPUT_DIR + item + ".csv", index=False)
 
+# Normalizing data
+def normalize(datasets)
+    for dataset in datasets:
+        scaler = MinMaxScaler()
+        normalized_data = scaler.fit_transform(dataset)
+
+        # Segment the data into windows
+        window_size = 128  # Example window size
+        X = []
+        for i in range(len(normalized_data) - window_size):
+            X.append(normalized_data[i:i+window_size])
+
+        X = np.array(X)
+
+
 matching_folders = get_subject(BASE_DIR_A)
 
 snirf_to_csv(matching_folders)
-# # Assuming 'fnirs_data' is a NumPy array of shape (time_points, channels)
-# scaler = MinMaxScaler()
-# normalized_data = scaler.fit_transform(fnirs_data)
-
-# # Segment the data into windows
-# window_size = 128  # Example window size
-# X = []
-# for i in range(len(normalized_data) - window_size):
-#     X.append(normalized_data[i:i+window_size])
-
-# X = np.array(X)
