@@ -51,4 +51,4 @@ def normalize_and_save_datasets_zscore():
     print("✔️  Todos os arquivos foram normalizados e salvos em:", output_dir)
 
 
-    normalize_and_save_datasets_zscore()
+normalize_and_save_datasets_zscore()
