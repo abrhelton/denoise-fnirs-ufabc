@@ -3,7 +3,6 @@ import pandas as pd
 import h5py
 import os
 import re
-from sklearn.preprocessing import MinMaxScaler
 
 # Raw data paths
 BASE_DIR = "/home/hsouza/internship/denoise-fnirs-ufabc/"
