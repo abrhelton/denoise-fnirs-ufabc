@@ -4,4 +4,4 @@ scikit-learn
 mlflow
 pandas
 scipy
-h5py=3.14.0
+h5py==3.14.0

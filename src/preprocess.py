@@ -39,20 +39,6 @@ def snirf_to_csv(matching_folders):
                 print(OUTPUT_DIR)
                 df.to_csv(OUTPUT_DIR + item + ".csv", index=False)
 
-# Normalizing data
-def normalize(datasets)
-    for dataset in datasets:
-        scaler = MinMaxScaler()
-        normalized_data = scaler.fit_transform(dataset)
-
-        # Segment the data into windows
-        window_size = 128  # Example window size
-        X = []
-        for i in range(len(normalized_data) - window_size):
-            X.append(normalized_data[i:i+window_size])
-
-        X = np.array(X)
-
 
 matching_folders = get_subject(BASE_DIR_A)
 
