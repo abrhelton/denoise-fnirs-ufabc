@@ -28,7 +28,6 @@ mlflow.set_experiment("fNIRS-Denoising")
 
 
 def load_all_preprocessed_data(path, train_size=0.8):
-    # ... (o resto do seu código continua igual)
     all_files = [os.path.join(path, f) for f in os.listdir(path) if f.endswith(".csv")]
     dfs = [pd.read_csv(f) for f in all_files]
     all_data = pd.concat(dfs, axis=0, ignore_index=True)
