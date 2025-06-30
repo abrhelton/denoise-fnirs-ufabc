@@ -92,7 +92,7 @@ if __name__ == "__main__":
 
     INPUT_DIM = X_train.shape[1]
     LATENT_DIM = 32
-    EPOCHS = 50
+    EPOCHS = 5
     LEARNING_RATE = 1e-3
     BATCH_SIZE = 64
 
