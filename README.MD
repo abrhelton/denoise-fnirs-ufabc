@@ -11,7 +11,7 @@ on similar subject.
 Type of NN used in this regard:
 - Vanilla Autoencoder
 - Sparse Autoencoder
-- Denoising Auutoencoder
+- Denoising Autoencoder
 - Undercomplete Autoencoder
 - Contractive Autoencoder
 - Convolutional Autoencoder
