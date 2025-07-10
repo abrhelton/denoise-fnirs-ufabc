@@ -5,20 +5,18 @@ import os
 import re
 
 # Raw data paths
-BASE_DIR = "/home/hsouza/internship/denoise-fnirs-ufabc/"
-BASE_DIR_A = BASE_DIR + "raw_data/a/bids_raw/"
-OUTPUT_DIR = BASE_DIR + "csv_data/"
-pattern_subject_a = re.compile(r'.*-\d{2}$')
+BASE_DIR = "D:/internship/denoise-fnirs-ufabc/data"
+ORIGIN = BASE_DIR + "/raw_data/"
+OUTPUT_DIR = BASE_DIR + "/csv_data/"
 pattern_data_a = re.compile(r'.*\.snirf$')
 
 matching_folders = []
 
 # Gettinhg the subjects of each experiment
-def get_subject(BASE_DIR_A):
-    for item in os.listdir(BASE_DIR_A):
-        full_path = os.path.join(BASE_DIR_A, item)
-        if os.path.isdir(full_path) and pattern_subject_a.match(item):
-            matching_folders.append(full_path)
+def get_subject(ORIGIN):
+    for item in os.listdir(ORIGIN):
+        full_path = os.path.join(ORIGIN, item)
+        matching_folders.append(full_path)
     return matching_folders
 
 # Converting the .snitf data into .csv
@@ -39,6 +37,6 @@ def snirf_to_csv(matching_folders):
                 df.to_csv(OUTPUT_DIR + item + ".csv", index=False)
 
 
-matching_folders = get_subject(BASE_DIR_A)
+matching_folders = get_subject(ORIGIN)
 
 snirf_to_csv(matching_folders)
