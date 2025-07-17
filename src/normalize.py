@@ -2,7 +2,7 @@ import os
 import pandas as pd
 
 def get_datasets():
-    BASE_DIR = '/content/denoise-fnirs-ufabc/data/csv_data'
+    BASE_DIR = "D:/internship/denoise-fnirs-ufabc/data/csv_data"
     datasets = []
     for dataset in os.listdir(BASE_DIR):
         if dataset.endswith('.csv'):
@@ -17,7 +17,7 @@ def zscore_normalize(df):
 
 def normalize_and_save_datasets_zscore():
     input_files = get_datasets()
-    output_dir = '/content/denoise-fnirs-ufabc/data/norm_data'
+    output_dir = "D:/internship/denoise-fnirs-ufabc/data/norm_data"
     os.makedirs(output_dir, exist_ok=True)
 
     for file_path in input_files:
@@ -29,6 +29,14 @@ def normalize_and_save_datasets_zscore():
             if 'Time (s)' in df.columns:
                 time_col = df['Time (s)']
                 df = df.drop(columns=['Time (s)'])
+
+            if "time" in df.columns:
+                time_col = df['time']
+                df = df.drop(columns=['time'])
+
+            if "Time" in df.columns:
+                time_col = df['Time']
+                df = df.drop(columns=['Time'])
 
             # Normaliza apenas colunas numéricas (HbO, HbR etc.)
             df_numeric = df.select_dtypes(include='number')
