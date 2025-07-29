@@ -1,7 +1,7 @@
-torch
-numpy
+torch==2.6.0
+numpy==1.26.4
 scikit-learn
 mlflow
-pandas
+pandas==2.2.2
 scipy
 h5py==3.14.0
