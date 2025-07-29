@@ -17,7 +17,7 @@ def zscore_normalize(df):
 
 def normalize_and_save_datasets_zscore():
     input_files = get_datasets()
-    output_dir = "D:/internship/denoise-fnirs-ufabc/data/norm_data"
+    output_dir = "D:/internship/denoise-fnirs-ufabc/data/teste"
     os.makedirs(output_dir, exist_ok=True)
 
     for file_path in input_files:
@@ -25,17 +25,13 @@ def normalize_and_save_datasets_zscore():
             df = pd.read_csv(file_path)
 
             # Verifica e remove a coluna de tempo se existir
-            time_col = None
             if 'Time (s)' in df.columns:
-                time_col = df['Time (s)']
                 df = df.drop(columns=['Time (s)'])
 
             if "time" in df.columns:
-                time_col = df['time']
                 df = df.drop(columns=['time'])
 
             if "Time" in df.columns:
-                time_col = df['Time']
                 df = df.drop(columns=['Time'])
 
             # Normaliza apenas colunas numéricas (HbO, HbR etc.)
@@ -43,15 +39,15 @@ def normalize_and_save_datasets_zscore():
             df_normalized = zscore_normalize(df_numeric)
 
             # Reinsere a coluna de tempo como a primeira coluna, se aplicável
-            if time_col is not None:
-                df_normalized.insert(0, 'Time', time_col)
+            # if time_col is not None:
+            #     df_normalized.insert(0, 'Time', time_col)
 
             # Salva o arquivo no diretório de saída
             filename = os.path.basename(file_path)
             output_path = os.path.join(output_dir, filename)
             df_normalized.to_csv(output_path, index=False)
 
-            print(f"[✓] Normalizado (tempo preservado): {filename}")
+            print(f"[✓] Normalizado: {filename}")
 
         except Exception as e:
             print(f"[X] Erro ao processar {file_path}: {e}")
