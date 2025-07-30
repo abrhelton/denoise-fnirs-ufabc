@@ -94,7 +94,7 @@ if __name__ == "__main__":
     LATENT_DIM = 32
     EPOCHS = 5
     LEARNING_RATE = 1e-3
-    BATCH_SIZE = 64
+    BATCH_SIZE = 16
 
     train_model(X_train, X_test, INPUT_DIM, LATENT_DIM, EPOCHS, LEARNING_RATE, BATCH_SIZE)
 
