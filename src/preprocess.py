@@ -10,7 +10,7 @@ OUTPUT_DIR = os.path.join(BASE_DIR, "norm_data")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-TARGET_CHANNELS = 200  # Número fixo de canais para treinamento
+TARGET_CHANNELS = 48  # Número fixo de canais para treinamento
 
 def clean_normalize_pad(df, target_channels=TARGET_CHANNELS):
     # Remove a coluna de tempo se existir
@@ -54,17 +54,15 @@ for file in os.listdir(ORIGIN):
             raw = mne.io.read_raw_snirf(snirf_path, preload=True)
             df = raw.to_data_frame()
 
-            df = clean_normalize_pad(df)
+            current = df.shape[1]
+            if current <= TARGET_CHANNELS:
+                df = clean_normalize_pad(df)
 
-            if df.empty or df.shape[1] != TARGET_CHANNELS:
-                print(f"Arquivo {file} inválido após o processamento. Pulando.")
-                continue
+                csv_filename = file.replace(".snirf", ".csv")
+                csv_path = os.path.join(OUTPUT_DIR, csv_filename)
+                df.to_csv(csv_path, index=False)
 
-            csv_filename = file.replace(".snirf", ".csv")
-            csv_path = os.path.join(OUTPUT_DIR, csv_filename)
-            df.to_csv(csv_path, index=False)
-
-            print(f"✅ Salvo: {csv_path}")
+                print(f"✅ Salvo: {csv_path}")
 
         except Exception as e:
             print(f"Erro ao processar {file}: {e}")
