@@ -6,30 +6,26 @@ import mne
 # Diretórios
 BASE_DIR = "D:/internship/denoise-fnirs-ufabc/data"
 ORIGIN = os.path.join(BASE_DIR, "raw_data")
-OUTPUT_DIR = os.path.join(BASE_DIR, "norm_data")
+OUTPUT_DIR = os.path.join(BASE_DIR, "csv_data")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 TARGET_CHANNELS = 48  # Número fixo de canais para treinamento
 
-def clean_normalize_pad(df, target_channels=TARGET_CHANNELS):
-    # Remove a coluna de tempo se existir
-    if 'Time (s)' in df.columns:
-        df = df.drop(columns=['Time (s)'])
-
-    if "time" in df.columns:
-        df = df.drop(columns=['time'])
-
-    if "Time" in df.columns:
-        df = df.drop(columns=['Time'])
+def csv_data(df, target_channels=TARGET_CHANNELS):
+    # Remove colunas de tempo
+    for time_col in ["time", "Time", "Time (s)"]:
+        if time_col in df.columns:
+            df = df.drop(columns=[time_col])
+            
     # Garante que os dados são numéricos
     df = df.select_dtypes(include=[np.number])
 
     # Remove canais com std zero (sem variação)
-    df = df.loc[:, df.std() > 1e-10]
+    # df = df.loc[:, df.std() > 1e-10]
 
     # Normalização canal a canal
-    df = (df - df.min()) / (df.max() - df.min())
+    # df = (df - df.min()) / (df.max() - df.min())
 
     # Padding ou truncamento para target_channels
     current = df.shape[1]
@@ -41,7 +37,7 @@ def clean_normalize_pad(df, target_channels=TARGET_CHANNELS):
         df = df.iloc[:, :target_channels]
 
     # Renomear colunas para ch_0, ch_1, ...
-    df.columns = [f"ch_{i}" for i in range(df.shape[1])]
+    # df.columns = [f"ch_{i}" for i in range(df.shape[1])]
 
     return df
 
@@ -56,7 +52,7 @@ for file in os.listdir(ORIGIN):
 
             current = df.shape[1]
             if current <= TARGET_CHANNELS:
-                df = clean_normalize_pad(df)
+                df = csv_data(df)
 
                 csv_filename = file.replace(".snirf", ".csv")
                 csv_path = os.path.join(OUTPUT_DIR, csv_filename)
