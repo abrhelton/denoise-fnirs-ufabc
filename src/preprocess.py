@@ -27,14 +27,14 @@ def csv_data(df, target_channels=TARGET_CHANNELS):
     # Normalização canal a canal
     # df = (df - df.min()) / (df.max() - df.min())
 
-    # Padding ou truncamento para target_channels
-    current = df.shape[1]
-    if current < target_channels:
-        missing = target_channels - current
-        padding = pd.DataFrame(np.zeros((df.shape[0], missing)), columns=[f"pad_{i}" for i in range(missing)])
-        df = pd.concat([df, padding], axis=1)
-    elif current > target_channels:
-        df = df.iloc[:, :target_channels]
+    # # Padding ou truncamento para target_channels
+    # current = df.shape[1]
+    # if current < target_channels:
+    #     missing = target_channels - current
+    #     padding = pd.DataFrame(np.zeros((df.shape[0], missing)), columns=[f"pad_{i}" for i in range(missing)])
+    #     df = pd.concat([df, padding], axis=1)
+    # elif current > target_channels:
+    #     df = df.iloc[:, :target_channels]
 
     # Renomear colunas para ch_0, ch_1, ...
     # df.columns = [f"ch_{i}" for i in range(df.shape[1])]
@@ -51,14 +51,13 @@ for file in os.listdir(ORIGIN):
             df = raw.to_data_frame()
 
             current = df.shape[1]
-            if current <= TARGET_CHANNELS:
-                df = csv_data(df)
+            df = csv_data(df)
 
-                csv_filename = file.replace(".snirf", ".csv")
-                csv_path = os.path.join(OUTPUT_DIR, csv_filename)
-                df.to_csv(csv_path, index=False)
+            csv_filename = file.replace(".snirf", ".csv")
+            csv_path = os.path.join(OUTPUT_DIR, csv_filename)
+            df.to_csv(csv_path, index=False)
 
-                print(f"✅ Salvo: {csv_path}")
+            print(f"✅ Salvo: {csv_path}")
 
         except Exception as e:
             print(f"Erro ao processar {file}: {e}")

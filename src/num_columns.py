@@ -3,7 +3,7 @@ import pandas as pd
 
 # Caminhos
 BASE_DIR = "D:/internship/denoise-fnirs-ufabc/data"
-NORM_DIR = os.path.join(BASE_DIR, "norm_data")  # Agora lendo os arquivos .csv normalizados
+NORM_DIR = os.path.join(BASE_DIR, "csv_data")  # Agora lendo os arquivos .csv normalizados
 REPORT_PATH = os.path.join(BASE_DIR, "canal_por_arquivo.csv")
 
 # Lista de resultados
