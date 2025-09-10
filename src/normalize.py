@@ -1,12 +1,15 @@
 import os
 import pandas as pd
 import numpy as np
+import re
 
 # Coeficientes de extinção (exemplo, em mmol^-1·mm^-1, valores reais devem vir da literatura)
 # λ1 = 757 nm, λ2 = 843 nm
 ext_coeffs = {
-    757: {"HbO": 0.6, "HbR": 1.5},
-    843: {"HbO": 1.4, "HbR": 0.8}
+    756: {"HbO": 570.0, "HbR": 1650.0},
+    757: {"HbO": 576.0, "HbR": 1660.0},
+    843: {"HbO": 1040.0, "HbR": 840.0},
+    853: {"HbO": 1030.0, "HbR": 830.0},
 }
 
 # Distância fonte-detector (em mm, precisa ajustar para seu setup real)
@@ -14,46 +17,66 @@ d = 30
 DPF = 6  # fator médio
 L = d * DPF
 
+EPS = 1e-8  # evita log(0)
+
 num_channels = 48
 
 def mbll(intensity_df):
     """
     Converte intensidade óptica em HbO/HbR via Beer-Lambert Law modificada.
+    Suporta pares (756-853) e (757-843).
     """
-    # Identifica pares de canais (mesmo Sx_Dy com λ 757 e 843)
     hbo_data, hbr_data = {}, {}
 
-
     for col in intensity_df.columns:
-        if col.endswith("757"):
-            base = col.replace("757", "")
-            col_843 = base + "843"
-            if col_843 in intensity_df.columns:
-                I757 = intensity_df[col]
-                I843 = intensity_df[col_843]
+        # Captura base do canal e comprimento de onda (ex.: S1_D2 757)
+        match = re.match(r"(S\d+_D\d+)\s*(\d+)", col)
+        if not match:
+            continue
 
-                # Normaliza em relação ao baseline (primeiro valor como I0)
-                A757 = -np.log(I757 / I757.iloc[0])
-                A843 = -np.log(I843 / I843.iloc[0])
+        base, wl = match.groups()
+        wl = int(wl)
 
-                # Monta matriz de coeficientes
-                E = np.array([
-                    [ext_coeffs[757]["HbO"], ext_coeffs[757]["HbR"]],
-                    [ext_coeffs[843]["HbO"], ext_coeffs[843]["HbR"]]
-                ])
+        # Determina par válido
+        if wl in [756, 757]:
+            other_wl = 853 if wl == 756 else 843
+        elif wl in [843, 853]:
+            other_wl = 756 if wl == 853 else 757
+        else:
+            continue
 
-                A = np.vstack([A757, A843]).T
+        col_other = f"{base} {other_wl}"
+        if col_other not in intensity_df.columns:
+            continue
 
-                # Resolve para HbO e HbR (ΔC = (E·L)^-1 · ΔA)
-                try:
-                    inv = np.linalg.inv(E * L)
-                    C = A @ inv.T
-                    hbo_data[base[:-1] + "HbO"] = C[:, 0]
-                    hbr_data[base[:-1] + "HbR"] = C[:, 1]
-                except np.linalg.LinAlgError:
-                    print(f"[X] Problema invertendo matriz para {base}")
-    
-    return pd.DataFrame({**hbo_data, **hbr_data})
+        # Intensidades com correção para evitar log(0/negativo)
+        I1 = np.clip(intensity_df[col].to_numpy(), EPS, None)
+        I2 = np.clip(intensity_df[col_other].to_numpy(), EPS, None)
+
+        A1 = -np.log(I1 / I1[0])
+        A2 = -np.log(I2 / I2[0])
+
+        # Matriz de coeficientes
+        E = np.array([
+            [ext_coeffs[wl]["HbO"], ext_coeffs[wl]["HbR"]],
+            [ext_coeffs[other_wl]["HbO"], ext_coeffs[other_wl]["HbR"]],
+        ]) * L
+
+        A = np.vstack([A1, A2]).T
+
+        try:
+            inv = np.linalg.inv(E)
+            C = A @ inv.T
+            hbo_data[f"{base}_HbO"] = C[:, 0]
+            hbr_data[f"{base}_HbR"] = C[:, 1]
+        except np.linalg.LinAlgError:
+            print(f"[X] Matriz não invertível em {base} ({wl}/{other_wl})")
+
+    result = pd.DataFrame({**hbo_data, **hbr_data})
+    # limpa inf e NaN
+    result = result.replace([np.inf, -np.inf], np.nan).dropna(axis=0, how="any")
+    return result
+
 
 def get_datasets():
     BASE_DIR = "D:/internship/denoise-fnirs-ufabc/data/csv_data"
